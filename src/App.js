@@ -1,39 +1,59 @@
 import { useState } from "react";
+import LineChart from './LineChart';
 import "./App.css";
 
-const api_key = "&lang=es&units=metric&appid=73e48893d12c632c3b7f98b00786a353";
-const url = "https://api.openweathermap.org/data/2.5/weather?q=";
+const apiKey = "&lang=es&units=metric&appid=73e48893d12c632c3b7f98b00786a353"; //datos dia actual
+const url = "https://api.openweathermap.org/data/2.5/weather?q="; //url base
+const forecast = "https://api.openweathermap.org/data/2.5/forecast?q=" //datos 5 dias siguientes
+
 
 function App() {
+
   const [searchTerm, setSearchTerm] = useState("");
   const [weather, setWeather] = useState({});
   const [sunrise, setSunrise] = useState("")
+  const [sunset, setSunset] = useState("")
+  const [forecastData, setForecastData] = useState({})
 
+  //searchWeather se ejecuta al hacer clink en buscar
   const searchWeather = async () => {
-    await fetch(url + searchTerm + api_key)
+    //Datos del dia actual
+    await fetch(url + searchTerm + apiKey)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        //console.log(data);
         setWeather(data);
+        
+        //Se establencen datos sunrise y sunset despues de hacer conversion de tiempos
+        setSunrise(convertTime(data.sys.sunrise, data.timezone));
+        setSunset(convertTime(data.sys.sunset, data.timezone));
       });
+
+      //Se borra la barra de busqueda
     setSearchTerm("");
+
+    //Datos pronostico 5 dias siguientes
+    /* await fetch(`${forecast}${searchTerm}${apiKey}`)
+      .then((res) => res.json())
+      .then((data) => {
+        //console.log(data);             
+        setForecastData(data)
+      }); */
     
-  //let sSet = convertTime(weather.sys.sunset, weather.timezone);
+ 
   };
 
   
-
+  //Funcion que convierte los datos de sunrise y sunset 
    function convertTime(unixTime, offset) {
     let dt = new Date((unixTime + offset) * 1000);
-    let h = dt.getHours();
+    let h = dt.getHours() + 5;
     let m = "0" + dt.getMinutes();
     let t = h + ":" + m.substr(-2);
     return t;
   }
 
-  //let sRise = convertTime(weather.sys.sunrise, weather.timezone);
-  //let sSet = convertTime(weather.sys.sunset, weather.timezone);
-
+  
   return (
     <div className="App">
       <div className="searchBar">
@@ -66,9 +86,11 @@ function App() {
             <li>Viento {Math.round(weather.wind.speed)} km/h</li>
             <li>Humedad {weather.main.humidity}%</li>
             <li>Presión {weather.main.pressure} hPa</li>
-            <li>Hora surise {sunrise}</li>
+            <li>Salida de sol {sunrise}</li>
+            <li>Puesta de sol {sunset}</li>
             
           </div>
+          <LineChart term = {searchTerm} />
         </div>
       ) : (
         ""
