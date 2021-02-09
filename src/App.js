@@ -4,7 +4,6 @@ import "./App.css";
 
 const apiKey = "&lang=es&units=metric&appid=73e48893d12c632c3b7f98b00786a353"; //datos dia actual
 const url = "https://api.openweathermap.org/data/2.5/weather?q="; //url base
-//const urlZip = `https://api.openweathermap.org/data/2.5/weather?zip=${s}`; //datos 5 dias siguientes
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,7 +29,8 @@ function App() {
         //Se establencen datos sunrise y sunset despues de hacer conversion de tiempos
         setSunrise(convertTime(data.sys.sunrise, data.timezone));
         setSunset(convertTime(data.sys.sunset, data.timezone));
-      });
+      })
+      .catch(err => console.log(err));
 
     setSearchTerm("");
   };
@@ -52,13 +52,13 @@ function App() {
         //Se establencen datos sunrise y sunset despues de hacer conversion de tiempos
         setSunrise(convertTime(data.sys.sunrise, data.timezone));
         setSunset(convertTime(data.sys.sunset, data.timezone));
-      });
+      }).catch(err => console.log(err));
 
     setSearchTerm("");
   };
   
   //Funcion que convierte los datos de sunrise y sunset
-  function convertTime(unixTime, offset) {
+  const convertTime =(unixTime, offset) => {
     let dt = new Date((unixTime + offset) * 1000);
     let h = dt.getHours() + 5;
     let m = "0" + dt.getMinutes();
@@ -66,7 +66,8 @@ function App() {
     return t;
   }
 
-  function handleSearch() {
+    //Funcion para saber si la búsqueda se hizo con ciudad o ZIP
+  const handleSearch = () => {
     var ddl = document.getElementById("select");
     var selectedValue = ddl.options[ddl.selectedIndex].value;
       if (selectedValue == "ciudad")
@@ -77,7 +78,8 @@ function App() {
      }
   }
 
-  function showMore(e) {
+  //funcion para mostrar mas detalles de la ciudad
+  const showMore = (e) => {
     const btn = e.target
     if(btn.textContent == "Ver más"){
       btn.textContent = "Ver Menos"
