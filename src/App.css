@@ -17,6 +17,14 @@
   box-shadow: 3px 3px 5px rgba(131, 131, 131, 0.7);
 }
 
+#select {
+  margin-left: 1rem;
+  border: none;
+  border-radius: 7px;
+  background-color: whitesmoke;
+  height: 1.6rem;
+}
+
 .searchBar button {
   all: unset;
   background-color: transparent;
@@ -38,6 +46,8 @@
   text-align: center;
   width: 20rem;
   margin: auto;
+  padding: 1rem;
+  border-radius: 5px;
 }
 
 .card__body--temp {
