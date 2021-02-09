@@ -11,16 +11,22 @@ function App() {
   const [weather, setWeather] = useState({});
   const [sunrise, setSunrise] = useState("");
   const [sunset, setSunset] = useState("");
-  const [zipTerm, setZipTerm] = useState("");
-
+  
+  let dataLayer = [];
   //searchWeather se ejecuta al hacer clink en buscar
   const searchWeather = async () => {
     //Datos del dia actual
     await fetch(url + searchTerm + apiKey)
       .then((res) => res.json())
       .then((data) => {
-        //console.log(data);
+        
         setWeather(data);
+        dataLayer.push ({
+          'event': 'ga_event',
+          'category': 'Aplicativo',
+          'action': data.name, //Valor dinámico - Nombre ciudad
+          'label': data.main.temp//Valor dinamico -Temperatura actual
+          });
         //Se establencen datos sunrise y sunset despues de hacer conversion de tiempos
         setSunrise(convertTime(data.sys.sunrise, data.timezone));
         setSunset(convertTime(data.sys.sunset, data.timezone));
@@ -36,6 +42,13 @@ function App() {
       .then((data) => {
         //console.log(data);
         setWeather(data);
+        dataLayer.push ({
+          'event': 'ga_event',
+          'category': 'Aplicativo',
+          'action': weather.name, //Valor dinámico - Nombre ciudad
+          'label': weather.main.temp//Valor dinamico -Temperatura actual
+          });
+      
         //Se establencen datos sunrise y sunset despues de hacer conversion de tiempos
         setSunrise(convertTime(data.sys.sunrise, data.timezone));
         setSunset(convertTime(data.sys.sunset, data.timezone));
@@ -64,7 +77,19 @@ function App() {
      }
   }
 
-  
+  function showMore(e) {
+    const btn = e.target
+    if(btn.textContent == "Ver más"){
+      btn.textContent = "Ver Menos"
+    } else if (btn.textContent == "Ver Menos") {
+      btn.textContent = "Ver más"
+    }
+    
+    const cardBody = e.target.parentNode;
+    const info = cardBody.nextElementSibling;
+    info.classList.toggle("hidden");
+  }
+
   
   return (
     <div className="App">
@@ -82,7 +107,7 @@ function App() {
           </option>
           
         </select>
-        <button onClick={handleSearch}>Buscar</button>
+        <button onClick={handleSearch} >Buscar</button>
       </div>
 
       {typeof weather.main != "undefined" ? (
@@ -103,8 +128,9 @@ function App() {
                   </h2>
                   <p>max: {Math.round(weather.main.temp_max)} °C</p>
                   <p>min: {Math.round(weather.main.temp_min)} °C</p>
+                  <button className="btn" onClick={showMore}>Ver más</button>
                 </div>
-                <div className="card__info">
+                <div className="card__info hidden">
                   <li>Viento {Math.round(weather.wind.speed)} km/h</li>
                   <li>Humedad {weather.main.humidity}%</li>
                   <li>Presión {weather.main.pressure} hPa</li>
